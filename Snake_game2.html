@@ -20,11 +20,11 @@
           <div id="ui">
             <h2>SCORE
             </h2>
-            <span id="score">00</span>
+            <span id="score">0</span>
           </div>
         </div>
         <div id="author">
-          <h1>SNAKE</h1> <span>by Beastie_7</span>
+          <h1>CYBER SNAKE</h1> <span>by Beastie_7</span>
         </div>
       </div>
     <script>
@@ -34,8 +34,9 @@ let dom_canvas = document.createElement("canvas");
 document.querySelector("#canvas").appendChild(dom_canvas);
 let CTX = dom_canvas.getContext("2d");
 
-const W = (dom_canvas.width = 400);
-const H = (dom_canvas.height = 400);
+const W = (dom_canvas.width = 550);
+const H = (dom_canvas.height = 550);
+
 
 let snake = undefined,
   food = undefined,
@@ -47,7 +48,7 @@ let snake = undefined,
   score = 00,
   maxScore = window.localStorage.getItem("maxScore") || undefined,
   particles = [],
-  splashingParticleCount = 100,
+  splashingParticleCount = 50,
   cellsCount,
   requestID;
 
@@ -85,8 +86,8 @@ let helpers = {
     }
   },
   drawGrid() {
-    CTX.lineWidth = 1.1;
-    CTX.strokeStyle = "#171717";
+    CTX.lineWidth = 0.5;
+    CTX.strokeStyle = "#99ccff";
     CTX.shadowBlur = 0;
     for (let i = 1; i < cells; i++) {
       let f = (W / cells) * i;
@@ -143,15 +144,15 @@ let helpers = {
       blue = secondComponent;
     }
 
-    var lightnessAdjustment = lightness - chroma / 2;
+    var lightnessAdjustment = lightness - chroma / 5;
     red += lightnessAdjustment;
     green += lightnessAdjustment;
     blue += lightnessAdjustment;
 
     return [
-      Math.round(red * 255),
-      Math.round(green * 255),
-      Math.round(blue * 255)
+      Math.round(red * 500),
+      Math.round(green * 500),
+      Math.round(blue * 500)
     ];
   },
   lerp(start, end, t) {
@@ -196,17 +197,17 @@ class Snake {
     this.dir = new helpers.Vec(0, 0);
     this.type = type;
     this.index = i;
-    this.delay = 5;
+    this.delay = 1;
     this.size = W / cells;
-    this.color = "white";
+    this.color = "#66ccff";
     this.history = [];
     this.total = 1;
   }
   draw() {
     let { x, y } = this.pos;
     CTX.fillStyle = this.color;
-    CTX.shadowBlur = 10;
-    CTX.shadowColor = "rgba(255,255,255,.3 )";
+    CTX.shadowBlur = 50;
+    CTX.shadowColor = " #99ccff";
     CTX.fillRect(x, y, this.size, this.size);
     CTX.shadowBlur = 0;
     if (this.total >= 2) {
@@ -272,8 +273,8 @@ class Snake {
         this.history[i] = this.history[i + 1];
       }
       this.pos.add(this.dir);
-      this.delay = 5;
-      this.total > 3 ? this.selfCollision() : null;
+      this.delay = 3;
+      this.total > 5 ? this.selfCollision() : null;
     }
   }
 }
@@ -290,7 +291,7 @@ class Food {
   draw() {
     let { x, y } = this.pos;
     CTX.globalCompositeOperation = "lighter";
-    CTX.shadowBlur = 10;
+    CTX.shadowBlur = 30;
     CTX.shadowColor = this.color;
     CTX.fillStyle = this.color;
     CTX.fillRect(x, y, this.size, this.size);
@@ -315,8 +316,8 @@ class Particle {
     this.pos = pos;
     this.color = color;
     this.size = Math.abs(size / 2);
-    this.ttl = 0;
-    this.gravity = -0.2;
+    this.ttl = 3;
+    this.gravity = 0;
     this.vel = vel;
   }
   draw() {
@@ -329,7 +330,7 @@ class Particle {
       .map((n) => +n);
     let [r, g, b] = helpers.hsl2rgb(hsl[0], hsl[1] / 100, hsl[2] / 100);
     CTX.shadowColor = `rgb(${r},${g},${b},${1})`;
-    CTX.shadowBlur = 0;
+    CTX.shadowBlur = 10;
     CTX.globalCompositeOperation = "lighter";
     CTX.fillStyle = `rgb(${r},${g},${b},${1})`;
     CTX.fillRect(x, y, this.size, this.size);
@@ -337,8 +338,8 @@ class Particle {
   }
   update() {
     this.draw();
-    this.size -= 0.3;
-    this.ttl += 1;
+    this.size -= 0.1;
+    this.ttl += 5;
     this.pos.add(this.vel);
     this.vel.y -= this.gravity;
   }
@@ -346,7 +347,7 @@ class Particle {
 
 function incrementScore() {
   score++;
-  dom_score.innerText = score.toString().padStart(2, "0");
+  dom_score.innerText = score.toString().padStart(0, "0");
 }
 
 function particleSplash() {
@@ -393,13 +394,13 @@ function gameOver() {
   maxScore ? null : (maxScore = score);
   score > maxScore ? (maxScore = score) : null;
   window.localStorage.setItem("maxScore", maxScore);
-  CTX.fillStyle = "#39A2DB";
+  CTX.fillStyle = " #ffffff";
   CTX.textAlign = "center";
-  CTX.font = "bold 30px Papyrus";
+  CTX.font = "bold 60px Lucida Console";
   CTX.fillText("GAME OVER", W / 2, H / 2);
-  CTX.font = "20px Papyrus";
+  CTX.font = "50px Lucida Console";
   CTX.fillText(`SCORE   ${score}`, W / 2, H / 2 + 60);
-  CTX.fillText(`MAXSCORE   ${maxScore}`, W / 2, H / 2 + 80);
+  CTX.fillText(`MAXSCORE   ${maxScore}`, W / 2, H / 2 + 100);
 }
 
 function reset() {
